@@ -1,41 +1,24 @@
-Zum Testen -> stand script
-
-
 use CovidAppDB
 
-if OBJECT_ID('Swiss_Covid_Data') is not null
-Drop Table Swiss_Covid_Data;
+if OBJECT_ID('Covid_Data_Country') is not null
+Drop Table Covid_Data_Country;
 
-create table Swiss_Covid_Data (
+create table Covid_Data_Country (
 Id int IDENTITY(1,1) PRIMARY KEY,
+ISO_Code NVARCHAR (100) NOT NULL,
+Kontinent NVARCHAR (100) NOT NULL,
+Land NVARCHAR (100) NOT NULL,
 Datum DATETIME NOT NULL,
-Kanton NVARCHAR (100) NOT NULL,
-Bestätigtefälle_Gesamt int NOT NULL,
+);
+
+if OBJECT_ID('Covid_Data_Cases') is not null
+Drop Table Covid_Data_Cases;
+
+create table Covid_Data_Cases (
+Id int IDENTITY(1,1) PRIMARY KEY,
+Total_Tote int NULL,
 );
 
 SELECT *
-FROM Swiss_Covid_Data
+FROM Covid_Data_Country, Covid_Data_Cases
 
-________________________
-________________________
-Fertig -> add comments im skript
-
-
-use CovidAppDB
-
-if OBJECT_ID('Swiss_Covid_Data') is not null
-Drop Table Swiss_Covid_Data;
-
-create table Swiss_Covid_Data (
-Id int IDENTITY(1,1) PRIMARY KEY,
-Datum DATETIME NOT NULL,
-Kanton NVARCHAR (100) NOT NULL,
-Bestätigtefälle_Gesamt int NOT NULL,
-Hospitalisierungen_pro_Tag int NOT NULL,
-Hospitalisierungen_Intensievstation_pro_Tag int NOT NULL,
-Hospitalisierungen_Beatmete_Personen_pro_Tag int NOT NULL,
-Todesfälle_Gesamt NVARCHAR (100) NOT NULL,
-);
-
-SELECT *
-FROM Swiss_Covid_Data

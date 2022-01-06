@@ -7,15 +7,17 @@ df = pd.concat(map(pd.read_csv, glob.glob('CSV/*.csv')))
 
 dn = pd.concat((dj,df))
 
-dn.drop(dn.query('date.isnull() | abbreviation_canton_and_fl.isnull() | ncumul_conf.isnull()').index, inplace=True)
-#add | ncumul_hosp.isnull() | ncumul_ICU.isnull() | ncumul_vent.isnull() ncumul_deceased.isnull()
+dn.drop(dn.query('iso_code.isnull() | continent.isnull() | location.isnull() | date.isnull() | total_cases.isnull()').index, inplace=True)
 
-columns = ['date', 'abbreviation_canton_and_fl', 'ncumul_conf']
-#add 'ncumul_hosp', 'ncumul_ICU', 'ncumul_vent', 'ncumul_deceased'
 
-dn_data = dn[columns]
+columns_country = ['iso_code', 'continent', 'location', 'date', 'total_cases']
+#columns_cases = ['total_cases']
 
-records = dn_data.values.tolist()
+dn_data_country = dn[columns_country]
+#dn_data_cases = dn[columns_cases]
+
+records_country = dn_data_country.values.tolist()
+#records_cases = dn_data_cases.values.tolist()
 
 DRIVER = 'SQL Server'
 SERVRE_NAME = 'DESKTOP-JEAC83G\SQLEXPRESS' #dein server name
@@ -39,15 +41,24 @@ except odbc.Error as e:
     print('Connection Error:')
     print(str(e.value[1]))
 
-sql_insert = '''
-    INSERT INTO Swiss_Covid_Data
-    VALUES (?, ?, ?)
+sql_insert_country = '''
+    INSERT INTO Covid_Data_Country(ISO_Code, Kontinent, Land, Datum)
+    VALUES (?, ?, ?, ?)
+    INSERT INTO Covid_Data_Cases(Total_Tote)
+    VALUES (?)
 '''
-#add , ?, ?, ?, ?
+
+##sql_insert_cases = '''
+##    INSERT INTO Covid_Data_Country(ISO_Code, Kontinent, Land, Datum)
+##    VALUES (?, ?, ?, ?)
+##    INSERT INTO Covid_Data_Cases(Total_Tote)
+##    VALUES (?)
+##'''
 
 try:
     cursor = conn.cursor()
-    cursor.executemany(sql_insert, records)
+    cursor.executemany(sql_insert_country, records_country)
+#    cursor.executemany(sql_insert_cases, records_cases)
     cursor.commit();
 except Exception as e:
     cursor.rollback()
