@@ -1,6 +1,6 @@
 import glob
-import pypyodbc as odbc # pip install pypyodbc
-import pandas as pd # pip install pandas
+import pypyodbc as odbc
+import pandas as pd
 
 dj = pd.concat(map(pd.read_json, glob.glob('json/*.json')))
 df = pd.concat(map(pd.read_csv, glob.glob('CSV/*.csv')))
@@ -8,16 +8,18 @@ df = pd.concat(map(pd.read_csv, glob.glob('CSV/*.csv')))
 dn = pd.concat((dj,df))
 
 dn.drop(dn.query('date.isnull() | abbreviation_canton_and_fl.isnull() | ncumul_conf.isnull()').index, inplace=True)
+#add | ncumul_hosp.isnull() | ncumul_ICU.isnull() | ncumul_vent.isnull() ncumul_deceased.isnull()
 
 columns = ['date', 'abbreviation_canton_and_fl', 'ncumul_conf']
+#add 'ncumul_hosp', 'ncumul_ICU', 'ncumul_vent', 'ncumul_deceased'
 
 dn_data = dn[columns]
 
 records = dn_data.values.tolist()
 
 DRIVER = 'SQL Server'
-SERVRE_NAME = 'DESKTOP-JEAC83G\SQLEXPRESS'
-DATABASE_NAME = 'CovidAppDB'
+SERVRE_NAME = 'DESKTOP-JEAC83G\SQLEXPRESS' #dein server name
+DATABASE_NAME = 'CovidAppDB' #dein database name
 
 def connection_string(driver, server_name, database_name):
     conn_string = f"""
@@ -41,6 +43,7 @@ sql_insert = '''
     INSERT INTO Swiss_Covid_Data
     VALUES (?, ?, ?)
 '''
+#add , ?, ?, ?, ?
 
 try:
     cursor = conn.cursor()
