@@ -1,0 +1,28 @@
+use CovidAppDB
+
+if OBJECT_ID('Swiss_Covid_Data') is not null
+Drop Table Swiss_Covid_Data;
+
+create table Swiss_Covid_Data (
+Datum DATETIME NOT NULL,
+Kanton NVARCHAR (100) NOT NULL,
+);
+
+SELECT *
+FROM Swiss_Covid_Data
+
+________________________
+
+if OBJECT_ID('Swiss_Covid_Data') is not null
+Drop Table Swiss_Covid_Data;
+
+create table Swiss_Covid_Data (
+Datum DATETIME NOT NULL,
+Kanton NVARCHAR (100) NOT NULL,
+Bestätigtefälle_Gesamt NVARCHAR (100) NOT NULL,
+Hospitalisierungen_pro_Tag NVARCHAR (100) NOT NULL,
+Todesfälle_Gesamt NVARCHAR (100) NOT NULL,
+);
+
+SELECT *
+FROM Swiss_Covid_Data
