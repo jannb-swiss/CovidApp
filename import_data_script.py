@@ -9,15 +9,11 @@ dn = pd.concat((dj,df))
 
 dn.drop(dn.query('iso_code.isnull() | continent.isnull() | location.isnull() | date.isnull() | total_cases.isnull()').index, inplace=True)
 
+columns = ['iso_code', 'continent', 'location', 'date', 'total_cases']
 
-columns_country = ['iso_code', 'continent', 'location', 'date', 'total_cases']
-#columns_cases = ['total_cases']
+dn_data = dn[columns]
 
-dn_data_country = dn[columns_country]
-#dn_data_cases = dn[columns_cases]
-
-records_country = dn_data_country.values.tolist()
-#records_cases = dn_data_cases.values.tolist()
+records = dn_data.values.tolist()
 
 DRIVER = 'SQL Server'
 SERVRE_NAME = 'DESKTOP-JEAC83G\SQLEXPRESS' #dein server name
@@ -41,24 +37,16 @@ except odbc.Error as e:
     print('Connection Error:')
     print(str(e.value[1]))
 
-sql_insert_country = '''
+sql_insert = '''
     INSERT INTO Covid_Data_Country(ISO_Code, Kontinent, Land, Datum)
     VALUES (?, ?, ?, ?)
-    INSERT INTO Covid_Data_Cases(Total_Tote)
+    INSERT INTO Covid_Data_Cases(Total_Ansteckungen)
     VALUES (?)
 '''
 
-##sql_insert_cases = '''
-##    INSERT INTO Covid_Data_Country(ISO_Code, Kontinent, Land, Datum)
-##    VALUES (?, ?, ?, ?)
-##    INSERT INTO Covid_Data_Cases(Total_Tote)
-##    VALUES (?)
-##'''
-
 try:
     cursor = conn.cursor()
-    cursor.executemany(sql_insert_country, records_country)
-#    cursor.executemany(sql_insert_cases, records_cases)
+    cursor.executemany(sql_insert, records)
     cursor.commit();
 except Exception as e:
     cursor.rollback()

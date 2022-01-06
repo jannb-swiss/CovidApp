@@ -1,10 +1,15 @@
+If(db_id(N'CovidAppDB') IS NULL)
+begin
+create database CovidAppDB;
+end
+
 use CovidAppDB
 
 if OBJECT_ID('Covid_Data_Country') is not null
 Drop Table Covid_Data_Country;
 
 create table Covid_Data_Country (
-Id int IDENTITY(1,1) PRIMARY KEY,
+CountryId int IDENTITY(1,1) PRIMARY KEY,
 ISO_Code NVARCHAR (100) NOT NULL,
 Kontinent NVARCHAR (100) NOT NULL,
 Land NVARCHAR (100) NOT NULL,
@@ -15,10 +20,31 @@ if OBJECT_ID('Covid_Data_Cases') is not null
 Drop Table Covid_Data_Cases;
 
 create table Covid_Data_Cases (
-Id int IDENTITY(1,1) PRIMARY KEY,
-Total_Tote int NULL,
+CasesId int IDENTITY(1,1) PRIMARY KEY,
+Total_Ansteckungen int NULL,
 );
 
-SELECT *
-FROM Covid_Data_Country, Covid_Data_Cases
+if OBJECT_ID('Covid_Data') is not null
+Drop Table Covid_Data;
+
+create table Covid_Data (
+CovidDataId int IDENTITY(1,1) PRIMARY KEY,
+CountryId int NULL,
+CasesId int NULL,
+);
+
+alter table Covid_Data
+	add constraint fk_covid_data_covid_data_country foreign key (CountryId) references Covid_Data_Country(CountryId);
+
+alter table Covid_Data
+	add constraint fk_covid_data_covid_data_cases foreign key (CasesId) references Covid_Data_Cases(CasesId);
+
+SELECT Covid_Data_Country.ISO_Code AS 'Abk.',
+	   Covid_Data_Country.Datum AS 'Datum',
+	   Covid_Data_Cases.Total_Ansteckungen AS 'Ansteckungen'
+From Covid_Data
+INNER JOIN Covid_Data_Country ON Covid_Data.CountryId = Covid_Data_Country.CountryId
+INNER JOIN Covid_Data_Cases ON Covid_Data.CasesId = Covid_Data_Cases.CasesId
+Order By CovidDataId
+
 
