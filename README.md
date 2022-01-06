@@ -1,3 +1,7 @@
+## todos:
+-Database -> 3 Normalform
+-Data visualization
+
 ## Daten von:
 https://github.com/openZH/covid_19
 
