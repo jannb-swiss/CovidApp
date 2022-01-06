@@ -1,5 +1,5 @@
 ## todos:
--Database -> 3 Normalform
+-Database -> 3 Normalform\
 -Data visualization
 
 ## Daten von:
