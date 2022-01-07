@@ -1,46 +1,10 @@
-If(db_id(N'CovidAppDB') IS NULL)
-begin
-create database CovidAppDB;
-end
-
 use CovidAppDB
 
-if OBJECT_ID('Land') is not null
-Drop Table Land;
-
-create table Land (
-LandId		int				IDENTITY(1,1),
-ISOCode	NVARCHAR (100)	NOT NULL,
-Kontinent	NVARCHAR (100)	NOT NULL,
-Land		NVARCHAR (100)	NOT NULL,
-Datum		DATETIME		NOT NULL,
-CONSTRAINT PK_Land PRIMARY KEY (LandID)
-);
-
-if OBJECT_ID('Ansteckungen') is not null
-Drop Table Ansteckungen;
-
-create table Ansteckungen (
-AnsteckungenId		int		IDENTITY(1,1),
-TotalAnsteckungen	int		NULL,
-CONSTRAINT PK_Ansteckungen PRIMARY KEY (AnsteckungenID)
-);
-
-if OBJECT_ID('CovidData') is not null
-Drop Table CovidData;
-
-create table CovidData (
-CovidDataId		int		IDENTITY(1,1),
-LandId			int		NULL,
-AnsteckungenId	int		NULL,
-CONSTRAINT PK_CovidData PRIMARY KEY (CovidDataID)
-);
-
-alter table CovidData
-	add constraint FK_CovidDataLand foreign key (LandId)
-	references Land (LandId) ON DELETE CASCADE;
-
-alter table CovidData
-	add constraint FK_CovidDtaAnsteckungen foreign key (AnsteckungenId)
-	references Ansteckungen (AnsteckungenId) ON DELETE CASCADE;
+SELECT Land.Datum,
+	   Ansteckungen.TotalAnsteckungen,
+	   CovidData.CovidDataId
+From CovidData
+JOIN Land ON CovidData.LandId = Land.LandId
+JOIN Ansteckungen ON CovidData.AnsteckungenId = Ansteckungen.AnsteckungenId
+Order by CovidData.CovidDataId;
 
