@@ -38,8 +38,10 @@ except odbc.Error as e:
     print(str(e.value[1]))
 
 sql_insert = '''
-    INSERT INTO Land(ISOCode, Kontinent, Land, Datum)
-    VALUES (?, ?, ?, ?)
+    INSERT INTO Land(ISOCode, Kontinent, LandName)
+    VALUES (?, ?, ?)
+    INSERT INTO CovidData(Datum)
+    VALUES (?)
     INSERT INTO Ansteckungen(TotalAnsteckungen)
     VALUES (?)
 '''

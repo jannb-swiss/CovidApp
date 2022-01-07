@@ -10,10 +10,9 @@ Drop Table Land;
 
 create table Land (
 LandId		int				IDENTITY(1,1),
-ISOCode	NVARCHAR (100)	NOT NULL,
+ISOCode		NVARCHAR (100)	NOT NULL,
 Kontinent	NVARCHAR (100)	NOT NULL,
-Land		NVARCHAR (100)	NOT NULL,
-Datum		DATETIME		NOT NULL,
+LandName	NVARCHAR (100)	NOT NULL,
 CONSTRAINT PK_Land PRIMARY KEY (LandID)
 );
 
@@ -31,8 +30,9 @@ Drop Table CovidData;
 
 create table CovidData (
 CovidDataId		int		IDENTITY(1,1),
-LandId			int		NULL,
-AnsteckungenId	int		NULL,
+Datum			DATETIME		NOT NULL,
+LandId			int				NULL,
+AnsteckungenId	int				NULL,
 CONSTRAINT PK_CovidData PRIMARY KEY (CovidDataID)
 );
 
