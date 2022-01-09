@@ -40,10 +40,12 @@ except odbc.Error as e:
 sql_insert = '''
     INSERT INTO Land(ISOCode, Kontinent, LandName)
     VALUES (?, ?, ?)
-    INSERT INTO CovidData(Datum)
+    INSERT INTO Datum(AktuellesDatum)
     VALUES (?)
     INSERT INTO Ansteckungen(TotalAnsteckungen)
     VALUES (?)
+    INSERT INTO CovidData(LandId, AnsteckungenId, DatumId)
+    VALUES ((select LandId from Land), (select AnsteckungenId from Ansteckungen), (select DatumId from Datum));
 '''
 
 try:
