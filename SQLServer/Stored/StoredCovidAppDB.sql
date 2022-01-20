@@ -1,4 +1,3 @@
-
 use CovidAppDB;
 
 if(OBJECT_ID(N'createContinent') IS NOT NULL)
@@ -9,7 +8,7 @@ go
 
 create procedure createContinent
     @name varchar(50),
-    @newIdentity int = null output
+    @new_identity int = null output
 as begin
     set nocount on;
     insert into Continent (ContinentName) values (@name);

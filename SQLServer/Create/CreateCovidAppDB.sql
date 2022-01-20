@@ -40,6 +40,7 @@ create table Country
     IsoCode	            varchar(10)		not null,
     Location	        varchar(50)		not null,
     Population          int             not null,
+    SET IDENTITY_INSERT Country ON
     constraint FK_Country_Continent foreign key (ContinentID) references Continent(ContinentID),
     constraint U_iso_code unique (IsoCode)
 )
