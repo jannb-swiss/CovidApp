@@ -1,6 +1,7 @@
-import config
 import getopt
 import sys
+
+import config
 from charts import Charts
 from db import DatabaseConnection
 

@@ -1,8 +1,7 @@
-
-
 class Vaccination:
 
-    def __init__(self, country: int, date: str, total_vaccinations: int, people_vaccinated: int, people_fully_vaccinated: int, new_vaccinations: int):
+    def __init__(self, country: int, date: str, total_vaccinations: int, people_vaccinated: int,
+                 people_fully_vaccinated: int, new_vaccinations: int):
         self._country = country
         self._date = date
         self._total_vaccinations = total_vaccinations

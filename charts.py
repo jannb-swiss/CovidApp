@@ -1,8 +1,9 @@
+import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
-import matplotlib.dates as mdates
-from db import DatabaseConnection
 from datetime import datetime, timedelta
+
+from db import DatabaseConnection
 
 
 class Charts:
@@ -70,4 +71,3 @@ class Charts:
 
         fig.tight_layout()  # otherwise the right y-label is slightly clipped
         plt.show()
-

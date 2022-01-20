@@ -1,7 +1,7 @@
-
 class Case:
 
-    def __init__(self, country: int, date: str, total_cases: int, new_cases: int, total_deaths: int, new_deaths: int, reproduction_rate: float):
+    def __init__(self, country: int, date: str, total_cases: int, new_cases: int, total_deaths: int, new_deaths: int,
+                 reproduction_rate: float):
         self._country = country
         self._date = date
         self._total_cases = total_cases
@@ -90,4 +90,5 @@ class Case:
         )
 
     def to_string(self) -> str:
-        return self.date + ", " + str(self.total_cases) + ", " + str(self.new_cases) + ", " + str(self.total_deaths) + ", " + str(self.new_deaths) + ", " + str(self.reproduction_rate)
+        return self.date + ", " + str(self.total_cases) + ", " + str(self.new_cases) + ", " + str(
+            self.total_deaths) + ", " + str(self.new_deaths) + ", " + str(self.reproduction_rate)

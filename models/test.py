@@ -1,5 +1,3 @@
-
-
 class Test:
 
     def __init__(self, country: int, date: str, new_tests: int, total_tests: int, positive_rate: float):

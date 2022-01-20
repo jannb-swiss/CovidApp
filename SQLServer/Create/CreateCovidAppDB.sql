@@ -1,100 +1,73 @@
-use master;
-go
+USE master
+GO
 
+IF NOT EXISTS(
+        SELECT name
+        FROM sys.databases
+        WHERE name = N'CovidAppDB'
+    )
+CREATE DATABASE [CovidAppDB]
+GO
 
-if(DB_ID(N'CovidAppDB') IS NOT NULL)
-    begin
-        alter database CovidAppDB set offline with rollback immediate
-        drop database CovidAppDB;
-    end
-go
+USE CovidAppDB;
+GO
 
-create database CovidAppDB;
-go
+DROP TABLE IF EXISTS[dbo].[Vaccinations]
+DROP TABLE IF EXISTS[dbo].[Tests]
+DROP TABLE IF EXISTS[dbo].[Cases]
+DROP TABLE IF EXISTS[dbo].[Country]
+DROP TABLE IF EXISTS[dbo].[Continent]
+GO
 
-use CovidAppDB;
-go
-
-if(OBJECT_ID(N'Continent') IS NOT NULL)
-    begin
-        drop table Continent;
-    end
-go
-
-create table Continent (
-   ContinentID		int	primary key	identity(1,1)	not null,
-   ContinentName	varchar(100)	not null,
-   constraint U_name unique(ContinentName)
+CREATE TABLE dbo.Continent
+(
+    ContinentID   INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
+    ContinentName VARCHAR(100)                   NOT NULL UNIQUE,
 )
 
-if(OBJECT_ID(N'Country') IS NOT NULL)
-    begin
-        drop table Country;
-    end
-go
-
-create table Country
+CREATE TABLE dbo.Country
 (
-    CountryID			int primary key identity(1,1)	not null,
-    ContinentID			int				not null,
-    IsoCode	            varchar(10)		not null,
-    Location	        varchar(50)		not null,
-    Population          int             not null,
-    SET IDENTITY_INSERT Country ON
-    constraint FK_Country_Continent foreign key (ContinentID) references Continent(ContinentID),
-    constraint U_iso_code unique (IsoCode)
+    CountryID   INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
+    ContinentID INT                            NOT NULL,
+    IsoCode     VARCHAR(10)                    NOT NULL UNIQUE,
+    Location    VARCHAR(50)                    NOT NULL,
+    Population  INT                            NOT NULL,
+    CONSTRAINT FK_Country_Continent FOREIGN KEY (ContinentID) REFERENCES Continent (ContinentID)
 )
 
-if(OBJECT_ID(N'Cases') IS NOT NULL)
-    begin
-        drop table Cases;
-    end
-go
-
-create table Cases
+CREATE TABLE dbo.Cases
 (
-    CasesID					int primary key identity(1,1)	not null,
-    CasesDate				date	not null,
-    TotalCases			    int		not null,
-    NewCases			    int		not null,
-    TotalDeaths		        int		not null,
-	NewDeaths		        int		not null,
-    ReproductionRate	float	not null,
-    CountryID				int		not null,
-    constraint FK_Cases_Country foreign  key (CountryID) references Country(CountryID),
+    CasesID          INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
+    CasesDate        DATE                           NOT NULL,
+    TotalCases       INT                            NOT NULL,
+    NewCases         INT                            NOT NULL,
+    TotalDeaths      INT                            NOT NULL,
+    NewDeaths        INT                            NOT NULL,
+    ReproductionRate FLOAT                          NOT NULL,
+    CountryID        INT                            NOT NULL,
+    CONSTRAINT FK_Cases_Country FOREIGN KEY (CountryID) REFERENCES Country (CountryID),
 )
 
-if(OBJECT_ID(N'Tests') IS NOT NULL)
-    begin
-        drop table Tests;
-    end
-go
-
-create table Tests
+CREATE TABLE dbo.Tests
 (
-    TestsID				int	primary key	identity(1,1)	not null,
-    TestsDate			date	not null,
-    NewTests		    int		not null,
-    TotalTests		    int		not null,
-    PositiveRate	    float	not null,
-    CountryID			int		not null,
-    constraint FK_Tests_Country foreign key (CountryID) references Country(CountryID)
+    TestsID      INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
+    TestsDate    DATE                           NOT NULL,
+    NewTests     INT                            NOT NULL,
+    TotalTests   INT                            NOT NULL,
+    PositiveRate FLOAT                          NOT NULL,
+    CountryID    INT                            NOT NULL,
+    CONSTRAINT FK_Tests_Country FOREIGN KEY (CountryID) REFERENCES Country (CountryID)
 )
 
-if(OBJECT_ID(N'Vaccinations') IS NOT NULL)
-    begin
-        drop table Vaccinations;
-    end
-go
-
-create table Vaccinations
+CREATE TABLE dbo.Vaccinations
 (
-    VaccinationsID						int primary key	identity(1,1)	not null,
-    VaccinationsDate					date	not null,
-    TotalVaccinations					bigint,
-    PeopleVaccinated					bigint,
-    PeopleFullyVaccinated				bigint,
-    NewVaccinations					    bigint,
-    CountryID							int		not null,
-    constraint FK_Vaccinations_Country foreign key (CountryID) references Country(CountryID),
+    VaccinationsID        INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
+    VaccinationsDate      DATE                           NOT NULL,
+    TotalVaccinations     BIGINT,
+    PeopleVaccinated      BIGINT,
+    PeopleFullyVaccinated BIGINT,
+    NewVaccinations       BIGINT,
+    CountryID             INT                            NOT NULL,
+    CONSTRAINT FK_Vaccinations_Country FOREIGN KEY (CountryID) REFERENCES Country (CountryID),
 );
+GO

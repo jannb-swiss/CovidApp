@@ -1,135 +1,141 @@
-use CovidAppDB;
+USE CovidAppDB;
 
-if(OBJECT_ID(N'createContinent') IS NOT NULL)
-    begin
-        drop procedure createContinent;
-    end
-go
+IF EXISTS(
+        SELECT *
+        FROM INFORMATION_SCHEMA.ROUTINES
+        WHERE SPECIFIC_SCHEMA = N'dbo'
+          AND SPECIFIC_NAME = N'createContinent'
+          AND ROUTINE_TYPE = N'PROCEDURE'
+    )
+    DROP PROCEDURE dbo.createContinent
+GO
+CREATE PROCEDURE dbo.createContinent @name varchar(50),
+                                     @new_identity int = null output
+AS
+BEGIN
+    SET NOCOUNT ON;
+    INSERT INTO Continent (ContinentName) VALUES (@name);
+    SET @new_identity = SCOPE_IDENTITY();
+END
+GO
 
-create procedure createContinent
-    @name varchar(50),
-    @new_identity int = null output
-as begin
-    set nocount on;
-    insert into Continent (ContinentName) values (@name);
-    set @new_identity = SCOPE_IDENTITY();
-end
-go
+IF EXISTS(
+        SELECT *
+        FROM INFORMATION_SCHEMA.ROUTINES
+        WHERE SPECIFIC_SCHEMA = N'dbo'
+          AND SPECIFIC_NAME = N'createCountry'
+          AND ROUTINE_TYPE = N'PROCEDURE'
+    )
+    DROP PROCEDURE dbo.createCountry
+GO
+CREATE PROCEDURE dbo.createCountry @continent INT,
+                                   @iso_code VARCHAR(20),
+                                   @name VARCHAR(50),
+                                   @population INT,
+                                   @new_identity INT = NULL OUTPUT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    INSERT INTO Country (ContinentID, IsoCode, Location, Population) VALUES (@continent, @iso_code, @name, @population);
+    SET @new_identity = SCOPE_IDENTITY();
+END
+GO
 
-if(OBJECT_ID(N'createCountry') IS NOT NULL)
-    begin
-        drop procedure createCountry;
-    end
-go
+IF EXISTS(
+        SELECT *
+        FROM INFORMATION_SCHEMA.ROUTINES
+        WHERE SPECIFIC_SCHEMA = N'dbo'
+          AND SPECIFIC_NAME = N'createCases'
+          AND ROUTINE_TYPE = N'PROCEDURE'
+    )
+    DROP PROCEDURE dbo.createCases
+GO
+CREATE PROCEDURE dbo.createCases @country INT,
+                                 @date DATE,
+                                 @total_cases INT,
+                                 @new_cases INT,
+                                 @total_deaths INT,
+                                 @new_deaths INT,
+                                 @reproduction_rate FLOAT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    INSERT INTO Cases (CountryID,
+                       CasesDate,
+                       TotalCases,
+                       NewCases,
+                       TotalDeaths,
+                       NewDeaths,
+                       ReproductionRate)
+    VALUES (@country,
+            @date,
+            @total_cases,
+            @new_cases,
+            @total_deaths,
+            @new_deaths,
+            @reproduction_rate);
+END
+GO
 
-create procedure createCountry
-    @continent int,
-    @iso_code varchar(20),
-    @name varchar(50),
-    @population int,
-    @new_identity int = null output
-as begin
-    set nocount on;
-    insert into Country (CountryID, IsoCode, Location, Population) values (@continent, @iso_code, @name, @population);
-    set @new_identity = SCOPE_IDENTITY();
-end
-go
+IF EXISTS(
+        SELECT *
+        FROM INFORMATION_SCHEMA.ROUTINES
+        WHERE SPECIFIC_SCHEMA = N'dbo'
+          AND SPECIFIC_NAME = N'createTests'
+          AND ROUTINE_TYPE = N'PROCEDURE'
+    )
+    DROP PROCEDURE dbo.createTests
+GO
+CREATE PROCEDURE dbo.createTests @country INT,
+                                 @date DATE,
+                                 @new_tests INT,
+                                 @total_tests INT,
+                                 @positive_rate INT
+AS
+BEGIN
+    SET NOCOUNT ON;
+    INSERT INTO Tests (CountryID,
+                       TestsDate,
+                       NewTests,
+                       TotalTests,
+                       PositiveRate)
+    VALUES (@country,
+            @date,
+            @new_tests,
+            @total_tests,
+            @positive_rate);
+END
+GO
 
-if(OBJECT_ID(N'createCases') IS NOT NULL)
-    begin
-        drop procedure createCases;
-    end
-go
-
-create procedure createCases
-    @country int,
-    @date date,
-    @total_cases int,
-    @new_cases int,
-    @total_deaths int,
-    @new_deaths int,
-    @reproduction_rate float
-as begin
-    set nocount on;
-    insert into Cases (
-        CountryID,
-        CasesDate,
-        TotalCases,
-        NewCases,
-        TotalDeaths,
-		NewDeaths,
-        ReproductionRate
-    ) values (
-         @country,
-         @date,
-         @total_cases,
-         @new_cases,
-         @total_deaths,
-         @new_deaths,
-         @reproduction_rate
-     );
-end
-go
-
-if(OBJECT_ID(N'createTests') IS NOT NULL)
-    begin
-        drop procedure createTests;
-    end
-go
-
-create procedure createTests
-    @country int,
-    @date date,
-    @new_tests int,
-    @total_tests int,
-    @positive_rate int
-as begin
-    set nocount on;
-    insert into Tests (
-        CountryID,
-        TestsDate,
-        NewTests,
-        TotalTests,
-        PositiveRate
-    ) values (
-         @country,
-         @date,
-         @new_tests,
-         @total_tests,
-         @positive_rate
-     );
-end
-go
-
-if(OBJECT_ID(N'createVaccinations') IS NOT NULL)
-    begin
-        drop procedure createVaccinations;
-    end
-go
-
-create procedure createVaccinations
-    @country int,
-    @date date,
-    @total_vaccinations int,
-    @people_vaccinated int,
-    @people_fully_vaccinated int,
-    @new_vaccinations int
-as begin
-    set nocount on;
-    insert into Vaccinations (
-        CountryID,
-        VaccinationsDate,
-        TotalVaccinations,
-        PeopleVaccinated,
-        PeopleFullyVaccinated,
-        NewVaccinations
-    ) values (
-         @country,
-         @date,
-         @total_vaccinations,
-         @people_vaccinated,
-         @people_fully_vaccinated,
-         @new_vaccinations
-     );
-end
-go
+IF EXISTS(
+        SELECT *
+        FROM INFORMATION_SCHEMA.ROUTINES
+        WHERE SPECIFIC_SCHEMA = N'dbo'
+          AND SPECIFIC_NAME = N'createVaccinations'
+          AND ROUTINE_TYPE = N'PROCEDURE'
+    )
+    DROP PROCEDURE dbo.createVaccinations
+GO
+CREATE PROCEDURE dbo.createVaccinations @country int,
+                                        @date date,
+                                        @total_vaccinations int,
+                                        @people_vaccinated int,
+                                        @people_fully_vaccinated int,
+                                        @new_vaccinations int
+AS
+BEGIN
+    SET NOCOUNT ON;
+    INSERT INTO Vaccinations (CountryID,
+                              VaccinationsDate,
+                              TotalVaccinations,
+                              PeopleVaccinated,
+                              PeopleFullyVaccinated,
+                              NewVaccinations)
+    VALUES (@country,
+            @date,
+            @total_vaccinations,
+            @people_vaccinated,
+            @people_fully_vaccinated,
+            @new_vaccinations);
+END
+GO

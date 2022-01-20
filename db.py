@@ -1,16 +1,17 @@
 import pyodbc
+
 from models.case import Case
-from models.vaccination import Vaccination
 from models.test import Test
+from models.vaccination import Vaccination
 
 
 class DatabaseConnection:
     conn = None
     cursor = None
 
-    def __init__(self, server: str, db: str, user: str, password: str):
-        connection_string: str = 'DRIVER={{SQL Server}};SERVER={0};DATABASE={1};UID={2};PWD={3};Trusted_Connection=yes;'
-        self.conn = pyodbc.connect(connection_string.format(server, db, user, password))
+    def __init__(self, driver: str, server: str, db: str, user: str, password: str):
+        connection_string: str = 'DRIVER={0};SERVER={1};DATABASE={2};UID={3};PWD={4};'
+        self.conn = pyodbc.connect(connection_string.format(driver, server, db, user, password))
         self.cursor = self.conn.cursor()
 
     def truncate_countries(self):

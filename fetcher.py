@@ -2,12 +2,14 @@
 
 
 import codecs
-import config
 import csv
-import requests
-import sys
 import getopt
+import sys
 from contextlib import closing
+
+import requests
+
+import config
 from db import DatabaseConnection
 from models.case import Case
 from models.test import Test
@@ -18,6 +20,7 @@ url = 'https://raw.githubusercontent.com/jannb-swiss/CovidApp/main/CSV/Covid19_F
 
 # db connection
 db = DatabaseConnection(
+    config.db_credentials['driver'],
     config.db_credentials['host'],
     config.db_credentials['database'],
     config.db_credentials['user'],
