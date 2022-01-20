@@ -5,6 +5,7 @@ db_credentials = dict(
     user='sa',
     password='Password123!'
 )
+
 ### Windows Config
 # db_credentials = dict(
 #    driver='{SQL Server}',
