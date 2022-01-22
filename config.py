@@ -1,16 +1,6 @@
 db_credentials = dict(
-    driver='{ODBC Driver 17 for SQL Server}',
-    host='localhost',
+    host='DESKTOP-JEAC83G\SQLEXPRESS',
     database='CovidAppDB',
-    user='sa',
-    password='Password123!'
+    user='jan',
+    password='12345'
 )
-
-### Windows Config
-# db_credentials = dict(
-#    driver='{SQL Server}',
-#    host='localhost',
-#    database='CovidAppDB',
-#    user='XXX',
-#    password='XXX!'
-# )

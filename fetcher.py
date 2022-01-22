@@ -4,11 +4,12 @@
 import codecs
 import csv
 import getopt
+import glob
 import sys
 from contextlib import closing
 
 import requests
-
+import pandas as pd
 import config
 from db import DatabaseConnection
 from models.case import Case
@@ -16,27 +17,23 @@ from models.test import Test
 from models.vaccination import Vaccination
 
 # config
+
+
 url = 'https://raw.githubusercontent.com/jannb-swiss/CovidApp/main/CSV/Covid19_FRA.csv'
+# dj = pd.concat(map(pd.read_json, glob.glob('json/*.json')))
+# df = pd.concat(map(pd.read_csv, glob.glob('CSV/*.csv')))
+# dn = pd.concat((dj, df))
 
 # db connection
 db = DatabaseConnection(
-    config.db_credentials['driver'],
+    # config.db_credentials['driver'],
     config.db_credentials['host'],
     config.db_credentials['database'],
     config.db_credentials['user'],
     config.db_credentials['password']
 )
 
-
-def get_help():
-    print('covid-19 charts database tool')
-    print('usage: python fetcher.py ... [-v | -h | --verbose | --help]')
-    print('options and arguments:')
-    print('-v: display debug information (also --verbose)')
-    print('-h: print this help message and exit (also --help)')
-
-
-def rebuild_database(verbose: bool = False):
+def rebuildDatabase(verbose: bool = False):
     if verbose:
         print('loading continent and country data')
 
@@ -84,7 +81,7 @@ def rebuild_database(verbose: bool = False):
             if not any(continent[1] == row[1] for continent in continents):
                 if verbose:
                     print('found new continent {}'.format(row[1]))
-                ContinentID: int = db.insert_content(row[1])
+                ContinentID: int = db.insertContent(row[1])
                 continents.append([ContinentID, row[1]])
 
             # get the continent id for the current row
@@ -93,20 +90,20 @@ def rebuild_database(verbose: bool = False):
             if not any(country[2] == row[0] for country in countries):
                 if verbose:
                     print('found new country {}'.format(row[2]))
-                CountryID: int = db.insert_country(continent_id, row[0], row[2], int(float(row[44] or 0)))
+                CountryID: int = db.insertCountry(continent_id, row[0], row[2], int(float(row[44] or 0)))
                 countries.append([CountryID, continent_id, row[0], row[2], row[44]])
 
             # get the country id for the current row
             country_id: int = [c for c in countries if c[2] == row[0]][0][0]
 
             # insert case
-            db.insert_case(Case.from_row(country_id, row))
+            db.insertCase(Case.from_row(country_id, row))
 
             # create test
-            db.insert_tests(Test.from_row(country_id, row))
+            db.insertTests(Test.from_row(country_id, row))
 
             # create vaccination
-            db.insert_vaccinations(Vaccination.from_row(country_id, row))
+            db.insertVaccinations(Vaccination.from_row(country_id, row))
 
     if verbose:
         print('script finished, found {} rows'.format(row_count))
@@ -114,24 +111,8 @@ def rebuild_database(verbose: bool = False):
 
 if __name__ == "__main__":
     try:
-
-        # get cli arguments
-        arguments, values = getopt.getopt(sys.argv[1:], "hv", ["help", "verbose"])
-
-        # iterate through input arguments
-        for argument, value in arguments:
-            if argument in ("-h", "--help"):
-                get_help()
-                sys.exit(0)
-            elif argument in ("-v", "--verbose"):
-                rebuild_database(verbose=True)
-                sys.exit(0)
-            else:
-                print("invalid parameter `" + argument + "`")
-                sys.exit(2)
-
         # if no params available, start in silent mode
-        rebuild_database(verbose=True)
+        rebuildDatabase(verbose=True)
 
     except getopt.error as err:
         print(str(err))

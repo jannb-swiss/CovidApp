@@ -9,10 +9,15 @@ class DatabaseConnection:
     conn = None
     cursor = None
 
-    def __init__(self, driver: str, server: str, db: str, user: str, password: str):
-        connection_string: str = 'DRIVER={0};SERVER={1};DATABASE={2};UID={3};PWD={4};'
-        self.conn = pyodbc.connect(connection_string.format(driver, server, db, user, password))
+    def __init__(self, server: str, db: str, user: str, password: str):
+        connection_string: str = 'DRIVER={{SQL Server}};SERVER={0};DATABASE={1};UID={2};PWD={3};Trusted_Connection=yes;'
+        self.conn = pyodbc.connect(connection_string.format(server, db, user, password))
         self.cursor = self.conn.cursor()
+
+    # def __init__(self, driver: str, server: str, db: str, user: str, password: str):
+    #     connection_string: str = 'DRIVER={0};SERVER={1};DATABASE={2};UID={3};PWD={4};'
+    #     self.conn = pyodbc.connect(connection_string.format(driver, server, db, user, password))
+    #     self.cursor = self.conn.cursor()
 
     def truncate_countries(self):
         self.cursor.execute("truncate table Country")
@@ -42,7 +47,7 @@ class DatabaseConnection:
         self.cursor.execute("select * from Country")
         return self.cursor.fetchall()
 
-    def insert_content(self, name: str) -> int:
+    def insertContent(self, name: str) -> int:
         sql = """
         declare @out int;
         exec createContinent @name = ?, @new_identity = @out output;
@@ -53,7 +58,7 @@ class DatabaseConnection:
         self.commit()
         return inserted_id[0][0]
 
-    def insert_country(self, con_id: int, iso: str, name: str, population: int) -> int:
+    def insertCountry(self, con_id: int, iso: str, name: str, population: int) -> int:
         sql = """
         declare @out int;
         exec createCountry @continent = ?, @iso_code = ?, @name = ?, @population = ?, @new_identity = @out output;
@@ -64,17 +69,17 @@ class DatabaseConnection:
         self.commit()
         return inserted_id[0][0]
 
-    def insert_case(self, case: Case):
+    def insertCase(self, case: Case):
         sql = "exec createCases @country = ?, @date = ?, @total_cases = ?, @new_cases = ?, @total_deaths = ?, @new_deaths = ?, @reproduction_rate = ?;"
         self.cursor.execute(sql, case.to_tuple())
         self.commit()
 
-    def insert_vaccinations(self, vaccination: Vaccination):
+    def insertVaccinations(self, vaccination: Vaccination):
         sql = "exec createVaccinations @country = ?, @date = ?, @total_vaccinations = ?, @people_vaccinated = ?, @people_fully_vaccinated = ?, @new_vaccinations = ?;"
         self.cursor.execute(sql, vaccination.to_tuple())
         self.commit()
 
-    def insert_tests(self, test: Test):
+    def insertTests(self, test: Test):
         sql = "exec createTests @country = ?, @date = ?, @new_tests = ?, @total_tests = ?, @positive_rate = ?;"
         self.cursor.execute(sql, test.to_tuple())
         self.commit()
@@ -91,12 +96,12 @@ class DatabaseConnection:
         self.cursor.execute(sql, date)
         return self.cursor.fetchall()
 
-    def get_total_cases(self):
+    def getTotalCases(self):
         sql = "select CasesDate, sum(TotalCases), sum(TotalDeaths) from Cases group by CasesDate order by CasesDate"
         self.cursor.execute(sql)
         return self.cursor.fetchall()
 
-    def get_total_vaccinations(self):
+    def getTotalVaccinations(self):
         sql = "select VaccinationsDate, sum(cast(TotalVaccinations as bigint)) from Vaccinations group by VaccinationsDate order by VaccinationsDate"
         self.cursor.execute(sql)
         return self.cursor.fetchall()

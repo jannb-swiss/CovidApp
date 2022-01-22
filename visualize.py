@@ -37,9 +37,9 @@ if __name__ == "__main__":
             if action == 'help':
                 get_help()
             if action == '1':
-                charts.show_pie_of_total_cases_by_continent()
+                charts.showPieOfTotalCasesByContinent()
             if action == '2':
-                charts.show_case_death_chart()
+                charts.showCaseDeathChart()
             elif action == 'exit':
                 sys.exit(0)
 
