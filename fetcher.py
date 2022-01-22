@@ -4,14 +4,13 @@
 import codecs
 import csv
 import getopt
-import glob
 import sys
 from contextlib import closing
 
 import requests
-import pandas as pd
+
 import config
-from db import DatabaseConnection
+from sqlServer.db import DatabaseConnection
 from models.case import Case
 from models.test import Test
 from models.vaccination import Vaccination
@@ -21,7 +20,7 @@ from models.vaccination import Vaccination
 
 url = 'https://raw.githubusercontent.com/jannb-swiss/CovidApp/main/CSV/Covid19_FRA.csv'
 # dj = pd.concat(map(pd.read_json, glob.glob('json/*.json')))
-# df = pd.concat(map(pd.read_csv, glob.glob('CSV/*.csv')))
+# df = pd.concat(map(pd.read_csv, glob.glob('csv/*.csv')))
 # dn = pd.concat((dj, df))
 
 # db connection
@@ -85,25 +84,25 @@ def rebuildDatabase(verbose: bool = False):
                 continents.append([ContinentID, row[1]])
 
             # get the continent id for the current row
-            continent_id: int = [c for c in continents if c[1] == row[1]][0][0]
+            continentID: int = [c for c in continents if c[1] == row[1]][0][0]
 
             if not any(country[2] == row[0] for country in countries):
                 if verbose:
                     print('found new country {}'.format(row[2]))
-                CountryID: int = db.insertCountry(continent_id, row[0], row[2], int(float(row[44] or 0)))
-                countries.append([CountryID, continent_id, row[0], row[2], row[44]])
+                CountryID: int = db.insertCountry(continentID, row[0], row[2], int(float(row[44] or 0)))
+                countries.append([CountryID, continentID, row[0], row[2], row[44]])
 
             # get the country id for the current row
-            country_id: int = [c for c in countries if c[2] == row[0]][0][0]
+            countryID: int = [c for c in countries if c[2] == row[0]][0][0]
 
             # insert case
-            db.insertCase(Case.from_row(country_id, row))
+            db.insertCase(Case.from_row(countryID, row))
 
             # create test
-            db.insertTests(Test.from_row(country_id, row))
+            db.insertTests(Test.from_row(countryID, row))
 
             # create vaccination
-            db.insertVaccinations(Vaccination.from_row(country_id, row))
+            db.insertVaccinations(Vaccination.from_row(countryID, row))
 
     if verbose:
         print('script finished, found {} rows'.format(row_count))

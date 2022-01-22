@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from datetime import datetime, timedelta
 
-from db import DatabaseConnection
+from sqlServer.db import DatabaseConnection
 
 
 class Charts:

@@ -2,8 +2,8 @@ import getopt
 import sys
 
 import config
-from charts import Charts
-from db import DatabaseConnection
+from covidCharts.charts import Charts
+from sqlServer.db import DatabaseConnection
 
 db = DatabaseConnection(
     config.db_credentials['host'],
