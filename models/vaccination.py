@@ -10,7 +10,7 @@ class Vaccination:
         self._new_vaccinations = new_vaccinations
 
     @staticmethod
-    def from_row(country: int, row: list):
+    def from_csv_row(country: int, row: list):
         return Vaccination(
             country,
             row[3],
@@ -18,6 +18,17 @@ class Vaccination:
             int(float(row[35] or 0)),
             int(float(row[36] or 0)),
             int(float(row[37] or 0)),
+        )
+
+    @staticmethod
+    def from_json_item(country: int, item: any):
+        return Vaccination(
+            country,
+            item['date'],
+            int(float(item['total_vaccinations'] or 0)),
+            int(float(item['people_vaccinated'] or 0)),
+            int(float(item['people_fully_vaccinated'] or 0)),
+            int(float(item['new_vaccinations'] or 0)),
         )
 
     @property

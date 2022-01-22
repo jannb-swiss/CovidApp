@@ -8,13 +8,23 @@ class Test:
         self._positive_rate = positive_rate
 
     @staticmethod
-    def from_row(country: int, row: list):
+    def from_csv_row(country: int, row: list):
         return Test(
             country,
             row[3],
             int(float(row[25] or 0)),
             int(float(row[26] or 0)),
             float(row[31] or 0),
+        )
+
+    @staticmethod
+    def from_json_item(country: int, item: any):
+        return Test(
+            country,
+            item['date'],
+            int(float(item['new_tests'] or 0)),
+            int(float(item['total_tests'] or 0)),
+            float(item['positive_rate'] or 0),
         )
 
     @property

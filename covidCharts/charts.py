@@ -1,7 +1,8 @@
+from datetime import datetime, timedelta
+
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
-from datetime import datetime, timedelta
 
 from sqlServer.db import DatabaseConnection
 
@@ -16,17 +17,17 @@ class Charts:
         if date is None:
             date = datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d')
         # load continent labels
-        labels = [country[1] for country in self._db.getContinents()]
+        labels = [country[1] for country in self._db.get_continents()]
         # load cases by continent
-        sizes = [case[1] for case in self._db.getContinentCases(date)]
+        sizes = [case[1] for case in self._db.get_continent_cases(date)]
         fig1, ax1 = plt.subplots()
         ax1.pie(sizes, labels=labels, autopct='%1.1f%%')
         ax1.axis('equal')
         plt.show()
 
     def showLineTotalCases(self):
-        cases = self._db.getTotalCases()
-        vaccines = self._db.getTotalVaccinations()
+        cases = self._db.get_total_cases()
+        vaccines = self._db.get_total_vaccinations()
         labels = [datetime.strptime(x[0], '%Y-%m-%d') for x in cases]
         plt.plot(labels, [x[1] for x in cases])
         plt.plot(labels, [x[2] for x in cases])
@@ -40,7 +41,7 @@ class Charts:
         plt.show()
 
     def showCaseDeathChart(self):
-        data = self._db.getTotalCases()
+        data = self._db.get_total_cases()
 
         date = [datetime.strptime(x[0], '%Y-%m-%d') for x in data]
         cases = [x[1] for x in data]

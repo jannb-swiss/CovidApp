@@ -1,114 +1,131 @@
 #!/usr/bin/python
-import codecs
 import csv
 import getopt
+import json
+import os
 import sys
-from contextlib import closing
-
-import requests
 
 import config
-import pandas as pd
-from sqlServer.db import DatabaseConnection
 from models.case import Case
 from models.test import Test
 from models.vaccination import Vaccination
+from sqlServer.db import DatabaseConnection
 
-# config
-url = 'https://raw.githubusercontent.com/jannb-swiss/CovidApp/main/CSV/Covid19_FRA.csv'
-# dj = pd.concat(map(pd.read_json, glob.glob('json/*.json')))
-# df = pd.concat(map(pd.read_csv, glob.glob('csv/*.csv')))
-# dn = pd.concat((dj, df))
+verbose: bool = True
+csv_data_folder_path = "data/csv"
+json_data_folder_path = "data/json"
 
-# db connection
 db = DatabaseConnection(
-    # config.db_credentials['driver'],
+    config.db_credentials['driver'],
     config.db_credentials['host'],
     config.db_credentials['database'],
     config.db_credentials['user'],
-    config.db_credentials['password']
+    config.db_credentials['password'],
 )
 
-def rebuildDatabase(verbose: bool = False):
+
+def cleanup_database():
+    db.delete_vaccinations()
     if verbose:
-        print('loading continent and country data')
+        print('Database table [Vaccinations] cleaned')
 
-    # load initial continent / country data
-    continents: list = db.getContinents()
-    countries: list = db.getCountries()
-
+    db.delete_tests()
     if verbose:
-        print('found {} continents and {} countries'.format(len(continents), len(countries)))
+        print('Database table [Tests] cleaned')
 
+    db.delete_cases()
     if verbose:
-        print('clearing database')
+        print('Database table [Cases] cleaned')
 
-    db.truncateCases()
-    db.truncateTests()
-    db.truncateVaccinations()
+    db.delete_countries()
+    if verbose:
+        print('Database table [Country] cleaned')
 
-    rowCount: int = 0
+    db.delete_continents()
+    if verbose:
+        print('Database table [Continent] cleaned')
 
-    # load csv
-    with closing(requests.get(url, stream=True)) as r:
 
+def insert_continent_if_not_existing(name: str) -> int:
+    continent = db.get_continent_by_name(name)
+    if continent:
+        return continent[0]
+    else:
         if verbose:
-            print('loading csv rows')
+            print('Found new continent {}'.format(name))
+        return db.insert_content(name)
 
-        # read csv file
-        reader = csv.reader(codecs.iterdecode(r.iter_lines(), 'utf-8'), delimiter=',')
 
-        # skip header row
+def insert_country_if_not_existing(iso_code: str, location: str, population: str, continent_id) -> int:
+    country = db.get_country_by_iso_code(iso_code)
+    if country:
+        return country[0]
+    else:
+        if verbose:
+            print('found new country {}'.format(location))
+        return db.insert_country(continent_id, iso_code, location, int(float(population or 0)))
+
+
+def import_all_files():
+    for root, dirs, files in os.walk(csv_data_folder_path):
+        for file in files:
+            file_path: str = csv_data_folder_path + "/" + file
+            import_csv_file(file_path)
+
+    for root, dirs, files in os.walk(json_data_folder_path):
+        for file in files:
+            file_path: str = json_data_folder_path + "/" + file
+            import_json_file(file_path)
+
+
+def import_csv_file(file_path: str):
+    if verbose:
+        print('Loading CSV file [{}|'.format(file_path))
+
+    with open(file_path, newline='') as csv_file:
+        reader = csv.reader(csv_file, delimiter=',', quotechar='|')
+
         next(reader)
 
-        # iterate through all csv rows
         for index, row in enumerate(reader):
-
-            rowCount += 1
-
             if verbose:
-                print('[{}] {}, {}'.format(index, row[2], row[3]))
+                print('{}, {}'.format(row[2], row[3]))
 
-            # skip row if continent is empty (non country data, eg world, europe, etc)
             if row[1] == "":
                 continue
 
-            # insert continent if not present already
-            if not any(continent[1] == row[1] for continent in continents):
-                if verbose:
-                    print('found new continent {}'.format(row[1]))
-                ContinentID: int = db.insertContent(row[1])
-                continents.append([ContinentID, row[1]])
+            continent_id: id = insert_continent_if_not_existing(row[1])
+            country_id: id = insert_country_if_not_existing(row[0], row[2], row[44], continent_id)
 
-            # get the continent id for the current row
-            continentID: int = [c for c in continents if c[1] == row[1]][0][0]
+            db.insert_case(Case.from_csv_row(country_id, row))
+            db.insert_tests(Test.from_csv_row(country_id, row))
+            db.insert_vaccinations(Vaccination.from_csv_row(country_id, row))
 
-            if not any(country[2] == row[0] for country in countries):
-                if verbose:
-                    print('found new country {}'.format(row[2]))
-                CountryID: int = db.insertCountry(continentID, row[0], row[2], int(float(row[44] or 0)))
-                countries.append([CountryID, continentID, row[0], row[2], row[44]])
 
-            # get the country id for the current row
-            countryID: int = [c for c in countries if c[2] == row[0]][0][0]
-
-            # insert case
-            db.insertCase(Case.from_row(countryID, row))
-
-            # create test
-            db.insertTests(Test.from_row(countryID, row))
-
-            # create vaccination
-            db.insertVaccinations(Vaccination.from_row(countryID, row))
-
+def import_json_file(file_path: str):
     if verbose:
-        print('script finished, found {} rows'.format(rowCount))
+        print('Loading JSON file [{}|'.format(file_path))
+
+    with open(file_path) as json_file:
+        json_data = json.load(json_file)
+
+        for item in json_data:
+            if verbose:
+                print('{}, {}'.format(item['location'], item['date']))
+
+            continent_id: id = insert_continent_if_not_existing(item['location'])
+            country_id: id = insert_country_if_not_existing(item['iso_code'], item['location'], item['population'],
+                                                            continent_id)
+
+            db.insert_case(Case.from_json_item(country_id, item))
+            db.insert_tests(Test.from_json_item(country_id, item))
+            db.insert_vaccinations(Vaccination.from_json_item(country_id, item))
 
 
 if __name__ == "__main__":
     try:
-        # if no params available, start in silent mode
-        rebuildDatabase(verbose=True)
+        cleanup_database()
+        import_all_files()
 
     except getopt.error as err:
         print(str(err))

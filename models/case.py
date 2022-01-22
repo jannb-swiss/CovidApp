@@ -11,7 +11,7 @@ class Case:
         self._reproduction_rate = reproduction_rate
 
     @staticmethod
-    def from_row(country: int, row: list):
+    def from_csv_row(country: int, row: list):
         return Case(
             country,
             row[3],
@@ -20,6 +20,18 @@ class Case:
             int(float(row[7] or 0)),
             int(float(row[8] or 0)),
             float(row[16] or 0)
+        )
+
+    @staticmethod
+    def from_json_item(country: int, item: any):
+        return Case(
+            country,
+            item['date'],
+            int(float(item['total_cases'] or 0)),
+            int(float(item['new_cases'] or 0)),
+            int(float(item['total_deaths'] or 0)),
+            int(float(item['new_deaths'] or 0)),
+            float(item['reproduction_rate'] or 0)
         )
 
     @property
