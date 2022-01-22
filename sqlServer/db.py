@@ -19,31 +19,31 @@ class DatabaseConnection:
     #     self.conn = pyodbc.connect(connection_string.format(driver, server, db, user, password))
     #     self.cursor = self.conn.cursor()
 
-    def truncate_countries(self):
+    def truncateCountries(self):
         self.cursor.execute("truncate table Country")
         self.cursor.commit()
 
-    def truncate_continents(self):
+    def truncateContinents(self):
         self.cursor.execute("truncate table Continent")
         self.cursor.commit()
 
-    def truncate_cases(self):
+    def truncateCases(self):
         self.cursor.execute("truncate table Cases")
         self.cursor.commit()
 
-    def truncate_tests(self):
+    def truncateTests(self):
         self.cursor.execute("truncate table Tests")
         self.cursor.commit()
 
-    def truncate_vaccinations(self):
+    def truncateVaccinations(self):
         self.cursor.execute("truncate table Vaccinations")
         self.cursor.commit()
 
-    def get_continents(self):
+    def getContinents(self):
         self.cursor.execute("select * from Continent order by ContinentID")
         return self.cursor.fetchall()
 
-    def get_countries(self):
+    def getCountries(self):
         self.cursor.execute("select * from Country")
         return self.cursor.fetchall()
 
@@ -84,7 +84,7 @@ class DatabaseConnection:
         self.cursor.execute(sql, test.to_tuple())
         self.commit()
 
-    def get_continent_cases(self, date: str):
+    def getContinentCases(self, date: str):
         sql = """
         select con.ContinentID, sum(TotalCases) as totalCases from Cases cas
         join Country cou on cas.CountryID = cou.CountryID

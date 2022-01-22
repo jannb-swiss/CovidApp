@@ -1,6 +1,4 @@
 #!/usr/bin/python
-
-
 import codecs
 import csv
 import getopt
@@ -10,14 +8,13 @@ from contextlib import closing
 import requests
 
 import config
+import pandas as pd
 from sqlServer.db import DatabaseConnection
 from models.case import Case
 from models.test import Test
 from models.vaccination import Vaccination
 
 # config
-
-
 url = 'https://raw.githubusercontent.com/jannb-swiss/CovidApp/main/CSV/Covid19_FRA.csv'
 # dj = pd.concat(map(pd.read_json, glob.glob('json/*.json')))
 # df = pd.concat(map(pd.read_csv, glob.glob('csv/*.csv')))
@@ -37,8 +34,8 @@ def rebuildDatabase(verbose: bool = False):
         print('loading continent and country data')
 
     # load initial continent / country data
-    continents: list = db.get_continents()
-    countries: list = db.get_countries()
+    continents: list = db.getContinents()
+    countries: list = db.getCountries()
 
     if verbose:
         print('found {} continents and {} countries'.format(len(continents), len(countries)))
@@ -46,11 +43,11 @@ def rebuildDatabase(verbose: bool = False):
     if verbose:
         print('clearing database')
 
-    db.truncate_cases()
-    db.truncate_tests()
-    db.truncate_vaccinations()
+    db.truncateCases()
+    db.truncateTests()
+    db.truncateVaccinations()
 
-    row_count: int = 0
+    rowCount: int = 0
 
     # load csv
     with closing(requests.get(url, stream=True)) as r:
@@ -58,7 +55,7 @@ def rebuildDatabase(verbose: bool = False):
         if verbose:
             print('loading csv rows')
 
-        # read csv
+        # read csv file
         reader = csv.reader(codecs.iterdecode(r.iter_lines(), 'utf-8'), delimiter=',')
 
         # skip header row
@@ -67,7 +64,7 @@ def rebuildDatabase(verbose: bool = False):
         # iterate through all csv rows
         for index, row in enumerate(reader):
 
-            row_count += 1
+            rowCount += 1
 
             if verbose:
                 print('[{}] {}, {}'.format(index, row[2], row[3]))
@@ -105,7 +102,7 @@ def rebuildDatabase(verbose: bool = False):
             db.insertVaccinations(Vaccination.from_row(countryID, row))
 
     if verbose:
-        print('script finished, found {} rows'.format(row_count))
+        print('script finished, found {} rows'.format(rowCount))
 
 
 if __name__ == "__main__":

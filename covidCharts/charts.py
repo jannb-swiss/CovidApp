@@ -16,9 +16,9 @@ class Charts:
         if date is None:
             date = datetime.strftime(datetime.now() - timedelta(1), '%Y-%m-%d')
         # load continent labels
-        labels = [country[1] for country in self._db.get_continents()]
+        labels = [country[1] for country in self._db.getContinents()]
         # load cases by continent
-        sizes = [case[1] for case in self._db.get_continent_cases(date)]
+        sizes = [case[1] for case in self._db.getContinentCases(date)]
         fig1, ax1 = plt.subplots()
         ax1.pie(sizes, labels=labels, autopct='%1.1f%%')
         ax1.axis('equal')

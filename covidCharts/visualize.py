@@ -13,7 +13,7 @@ db = DatabaseConnection(
 )
 
 
-def get_help():
+def getHelp():
     print('covid-19 charts')
     print('help: show this help')
     print('exit: stop the application')
@@ -35,7 +35,7 @@ if __name__ == "__main__":
             action = input('enter your option: ')
 
             if action == 'help':
-                get_help()
+                getHelp()
             if action == '1':
                 charts.showPieOfTotalCasesByContinent()
             if action == '2':
