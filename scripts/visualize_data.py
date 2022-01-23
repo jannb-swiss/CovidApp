@@ -16,12 +16,12 @@ db = DatabaseConnection(
 
 
 def get_help():
-    print("###########################################")
-    print('# exit: Stop the application              #')
-    print('# 1: Show total cases by continent        #')
-    print('# 2: Show total cases and deaths          #')
-    print('# 2: Show total vaccinations by continent #')
-    print("###########################################")
+    print("################################################")
+    print('# exit: Stop the application                   #')
+    print('# 1: Show total cases by continent             #')
+    print('# 2: Show total cases and deaths               #')
+    print('# 3: Show total vaccinations by continent      #')
+    print("################################################")
 
 
 if __name__ == "__main__":

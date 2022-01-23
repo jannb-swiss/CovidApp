@@ -171,7 +171,7 @@ class DatabaseConnection:
         Parameters:
         date -- the date which should be loaded (e.g. 2022-01-22)
         """
-        sql = "SELECT * FROM V_ContinentVaccinations WHERE VaccinationsDate = ? ORDER BY ContinentID"
+        sql = "SELECT * FROM V_ContinentTotalVaccinations WHERE VaccinationsDate = ? ORDER BY ContinentID"
         self.cursor.execute(sql, date)
         return self.cursor.fetchall()
 

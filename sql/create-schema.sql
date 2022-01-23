@@ -221,7 +221,7 @@ FROM Cases cases
 GROUP BY continent.ContinentID, CasesDate
 GO
 
-CREATE OR ALTER VIEW V_ContinentVaccinations
+CREATE OR ALTER VIEW V_ContinentTotalVaccinations
 AS
 SELECT VaccinationsDate, continent.ContinentID, sum(TotalVaccinations) as TotalVaccinations
 FROM Vaccinations vaccinations

@@ -35,7 +35,7 @@ class Charts:
         ax1.pie(sizes, labels=labels, autopct='%1.1f%%')
 
         ax1.axis('equal')
-        plt.title(title, bbox={'facecolor': '0.9', 'pad': 5})
+        plt.title(title, bbox={'facecolor': '0.9', 'pad': 5}, y=1.05)
         plt.show()
 
     def show_total_cases_by_continent(self, date_text: str):
@@ -48,7 +48,7 @@ class Charts:
         labels = [continent[1] for continent in self._db.get_continents()]
         sizes = [case[2] for case in self._db.get_continent_cases(date_text)]
 
-        title = "Total Cases by Continent"
+        title = "Total Cases by Continent - {}".format(date_text)
         self.create_pie_chart(title, date_text, sizes, labels)
 
     def show_total_vaccinations_by_continent(self, date_text: str):
@@ -60,21 +60,19 @@ class Charts:
         """
         labels = [continent[1] for continent in self._db.get_continents()]
         sizes = [case[2] for case in self._db.get_continent_vaccinations(date_text)]
-        print(sizes)
 
-        title = "Total Vaccinations by Continent"
+        title = "Total Vaccinations by Continent - {}".format(date_text)
         self.create_pie_chart(title, date_text, sizes, labels)
 
     def show_death_chart(self):
         """
         Creates a matplotlib pie chart to show all the cases and deaths.
         """
-
         data = self._db.get_total_cases()
 
-        dates = [datetime.strptime(str(x[0]), '%Y-%m-%d') for x in data]
-        cases = [x[1] for x in data]
-        deaths = [x[2] for x in data]
+        dates = [datetime.strptime(str(row[0]), '%Y-%m-%d') for row in data]
+        cases = [row[1] for row in data]
+        deaths = [row[2] for row in data]
 
         fig, ax1 = plt.subplots()
 
