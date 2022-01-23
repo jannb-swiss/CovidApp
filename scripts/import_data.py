@@ -11,7 +11,7 @@ from models.test import Test
 from models.vaccination import Vaccination
 from scripts.db.database_connection import DatabaseConnection
 
-verbose: bool = True
+verbose: bool = False
 csv_data_folder_path = "./data/csv"
 json_data_folder_path = "./data/json"
 
@@ -28,6 +28,7 @@ def cleanup_database():
     """
     Deletes all the existing data from the database
     """
+    print("Start to cleanup all data from database")
 
     db.delete_vaccinations()
     if verbose:
@@ -48,6 +49,8 @@ def cleanup_database():
     db.delete_continents()
     if verbose:
         print('Database table [Continent] cleaned')
+
+    print("Cleanup of database is completed")
 
 
 def insert_continent_if_not_existing(name: str) -> int:
@@ -91,6 +94,7 @@ def import_all_files():
     """
     Imports all the CSV and JSON files which are stored in the ./data/ folder.
     """
+    print("Start importing all files")
 
     for root, dirs, files in os.walk(csv_data_folder_path):
         if verbose:
@@ -107,6 +111,8 @@ def import_all_files():
         for file in files:
             file_path: str = json_data_folder_path + "/" + file
             import_json_file(file_path)
+
+    print("Import of files is done")
 
 
 def import_csv_file(file_path: str):
@@ -171,6 +177,15 @@ def import_json_file(file_path: str):
 
 if __name__ == "__main__":
     try:
+        arguments, values = getopt.getopt(sys.argv[1:], "v", ["verbose"])
+
+        for argument, value in arguments:
+            if argument in ("-v", "--verbose"):
+                verbose = True
+            else:
+                print("invalid parameter `" + argument + "`")
+                sys.exit(2)
+
         cleanup_database()
         import_all_files()
 
