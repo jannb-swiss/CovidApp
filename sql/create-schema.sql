@@ -211,3 +211,12 @@ BEGIN
             @new_vaccinations);
 END
 GO
+
+CREATE OR ALTER VIEW V_ContinentCases
+AS
+SELECT CasesDate, continent.ContinentID, sum(TotalCases) as totalCases
+FROM Cases cases
+         JOIN Country country ON cases.CountryID = country.CountryID
+         JOIN Continent continent ON continent.ContinentID = country.ContinentID
+GROUP BY continent.ContinentID, CasesDate
+GO

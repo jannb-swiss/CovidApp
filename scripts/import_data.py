@@ -9,11 +9,11 @@ import config
 from models.case import Case
 from models.test import Test
 from models.vaccination import Vaccination
-from sqlServer.db import DatabaseConnection
+from sql.database_connection import DatabaseConnection
 
 verbose: bool = True
-csv_data_folder_path = "data/csv"
-json_data_folder_path = "data/json"
+csv_data_folder_path = "./data/csv"
+json_data_folder_path = "./data/json"
 
 db = DatabaseConnection(
     config.db_credentials['driver'],
@@ -68,11 +68,17 @@ def insert_country_if_not_existing(iso_code: str, location: str, population: str
 
 def import_all_files():
     for root, dirs, files in os.walk(csv_data_folder_path):
+        if verbose:
+            print("Found {} CSV files to import".format(len(files)))
+
         for file in files:
             file_path: str = csv_data_folder_path + "/" + file
             import_csv_file(file_path)
 
     for root, dirs, files in os.walk(json_data_folder_path):
+        if verbose:
+            print("Found {} JSON files to import".format(len(files)))
+
         for file in files:
             file_path: str = json_data_folder_path + "/" + file
             import_json_file(file_path)
@@ -112,6 +118,9 @@ def import_json_file(file_path: str):
         for item in json_data:
             if verbose:
                 print('{}, {}'.format(item['location'], item['date']))
+
+            if item['continent'] == "":
+                continue
 
             continent_id: id = insert_continent_if_not_existing(item['location'])
             country_id: id = insert_country_if_not_existing(item['iso_code'], item['location'], item['population'],

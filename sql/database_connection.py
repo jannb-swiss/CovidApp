@@ -9,7 +9,6 @@ class DatabaseConnection:
     conn = None
     cursor = None
 
-    # Trusted_Connection=yes;
     def __init__(self, driver: str, server: str, db: str, user: str, password: str):
         if driver == '{SQL Server}':
             connection_string: str = 'DRIVER={0};SERVER={1};DATABASE={2};UID={3};PWD={4};Trusted_Connection=yes;'
@@ -39,15 +38,15 @@ class DatabaseConnection:
         self.cursor.commit()
 
     def get_continents(self):
-        self.cursor.execute("select * from Continent order by ContinentID")
+        self.cursor.execute("SELECT * FROM Continent ORDER BY ContinentID")
         return self.cursor.fetchall()
 
     def get_continent_by_name(self, name: str):
-        self.cursor.execute("select * from Continent where ContinentName = ?", name)
+        self.cursor.execute("SELECT * FROM Continent WHERE ContinentName = ?", name)
         return self.cursor.fetchone()
 
     def get_country_by_iso_code(self, iso_code: str):
-        self.cursor.execute("select * from Country where IsoCode = ?", iso_code)
+        self.cursor.execute("SELECT * FROM Country WHERE IsoCode = ?", iso_code)
         return self.cursor.fetchone()
 
     def insert_content(self, name: str) -> int:
@@ -88,23 +87,16 @@ class DatabaseConnection:
         self.cursor.commit()
 
     def get_continent_cases(self, date: str):
-        sql = """
-        select con.ContinentID, sum(TotalCases) as totalCases from Cases cas
-        join Country cou on cas.CountryID = cou.CountryID
-        join Continent con on con.ContinentID = cou.ContinentID
-        where CasesDate = ?
-        group by con.ContinentID, CasesDate
-        order by con.ContinentID
-        """
+        sql = "SELECT * FROM V_ContinentCases WHERE CasesDate = ? ORDER BY ContinentID"
         self.cursor.execute(sql, date)
         return self.cursor.fetchall()
 
     def get_total_cases(self):
-        sql = "select CasesDate, sum(TotalCases), sum(TotalDeaths) from Cases group by CasesDate order by CasesDate"
+        sql = "SELECT CasesDate, sum(TotalCases), sum(TotalDeaths) FROM Cases GROUP BY CasesDate ORDER BY CasesDate"
         self.cursor.execute(sql)
         return self.cursor.fetchall()
 
     def get_total_vaccinations(self):
-        sql = "select VaccinationsDate, sum(cast(TotalVaccinations as bigint)) from Vaccinations group by VaccinationsDate order by VaccinationsDate"
+        sql = "SELECT VaccinationsDate, sum(cast(TotalVaccinations AS bigint)) FROM Vaccinations GROUP BY VaccinationsDate ORDER BY VaccinationsDate"
         self.cursor.execute(sql)
         return self.cursor.fetchall()
