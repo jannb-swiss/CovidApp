@@ -4,7 +4,7 @@ from datetime import datetime
 
 import config
 from charts import Charts
-from sql.database_connection import DatabaseConnection
+from scripts.db.database_connection import DatabaseConnection
 
 db = DatabaseConnection(
     config.db_credentials['driver'],
