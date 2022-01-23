@@ -16,11 +16,12 @@ db = DatabaseConnection(
 
 
 def get_help():
-    print("######################################")
-    print('# exit: Stop the application         #')
-    print('# 1: Show total cases by continent   #')
-    print('# 2: Show total cases and deaths     #')
-    print("######################################")
+    print("###########################################")
+    print('# exit: Stop the application              #')
+    print('# 1: Show total cases by continent        #')
+    print('# 2: Show total cases and deaths          #')
+    print('# 2: Show total vaccinations by continent #')
+    print("###########################################")
 
 
 if __name__ == "__main__":
@@ -34,7 +35,7 @@ if __name__ == "__main__":
             action = input('Enter your option: ')
 
             if action == '1':
-                date_text = input('Enter specific date (e.g. 2022-01-22): ')
+                date_text = input('Enter specific date (e.g. 2021-11-22): ')
 
                 try:
                     datetime.strptime(date_text, '%Y-%m-%d')
@@ -44,6 +45,16 @@ if __name__ == "__main__":
 
             if action == '2':
                 charts.show_death_chart()
+
+            if action == '3':
+                date_text = input('Enter specific date (e.g. 2021-06-06): ')
+
+                try:
+                    datetime.strptime(date_text, '%Y-%m-%d')
+                    charts.show_total_vaccinations_by_continent(date_text)
+                except ValueError:
+                    print("The entered date is not in the correct format, should be YYYY-MM-DD. Please try again!")
+
             elif action == 'exit':
                 sys.exit(0)
 

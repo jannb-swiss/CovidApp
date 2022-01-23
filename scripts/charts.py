@@ -16,17 +16,17 @@ class Charts:
     def __init__(self, db: DatabaseConnection):
         self._db = db
 
-    def show_total_cases_by_continent(self, date_text: str):
+    @staticmethod
+    def create_pie_chart(title, date_text, sizes, labels):
         """
-        Creates a matplotlib pie chart to show all the cases for a specific date.
+        Common methode to create a pie chart width data and label
 
         Parameters:
-        date_text -- the date for showing the cases (e.g. 2022-01-22)
+        title     -- the title to be shown
+        date_text -- the selected date string
+        sizes     -- the data sizes for the chart
+        labels    -- the labels for the chart
         """
-
-        labels = [continent[1] for continent in self._db.get_continents()]
-        sizes = [case[1] for case in self._db.get_continent_cases(date_text)]
-
         if not sizes:
             print("No data found for date [{}]".format(date_text))
             return
@@ -35,8 +35,35 @@ class Charts:
         ax1.pie(sizes, labels=labels, autopct='%1.1f%%')
 
         ax1.axis('equal')
-        plt.title("Total Cases by Continent", bbox={'facecolor': '0.9', 'pad': 5})
+        plt.title(title, bbox={'facecolor': '0.9', 'pad': 5})
         plt.show()
+
+    def show_total_cases_by_continent(self, date_text: str):
+        """
+        Creates a matplotlib pie chart to show all the cases for a specific date.
+
+        Parameters:
+        date_text -- the date for showing the cases (e.g. 2022-01-22)
+        """
+        labels = [continent[1] for continent in self._db.get_continents()]
+        sizes = [case[2] for case in self._db.get_continent_cases(date_text)]
+
+        title = "Total Cases by Continent"
+        self.create_pie_chart(title, date_text, sizes, labels)
+
+    def show_total_vaccinations_by_continent(self, date_text: str):
+        """
+        Creates a matplotlib pie chart to show all the vaccinations for a specific date.
+
+        Parameters:
+        date_text -- the date for showing the cases (e.g. 2022-01-22)
+        """
+        labels = [continent[1] for continent in self._db.get_continents()]
+        sizes = [case[2] for case in self._db.get_continent_vaccinations(date_text)]
+        print(sizes)
+
+        title = "Total Vaccinations by Continent"
+        self.create_pie_chart(title, date_text, sizes, labels)
 
     def show_death_chart(self):
         """

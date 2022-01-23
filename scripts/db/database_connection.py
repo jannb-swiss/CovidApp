@@ -155,12 +155,23 @@ class DatabaseConnection:
 
     def get_continent_cases(self, date: str):
         """
-        Loads all the cases for all continents for a specific date ordered by the id.
+        Loads all the cases for all continents for a specific date ordered by the continent id.
 
         Parameters:
         date -- the date which should be loaded (e.g. 2022-01-22)
         """
         sql = "SELECT * FROM V_ContinentCases WHERE CasesDate = ? ORDER BY ContinentID"
+        self.cursor.execute(sql, date)
+        return self.cursor.fetchall()
+
+    def get_continent_vaccinations(self, date: str):
+        """
+        Loads all the vaccinations for all continents for a specific date ordered by the continent id.
+
+        Parameters:
+        date -- the date which should be loaded (e.g. 2022-01-22)
+        """
+        sql = "SELECT * FROM V_ContinentVaccinations WHERE VaccinationsDate = ? ORDER BY ContinentID"
         self.cursor.execute(sql, date)
         return self.cursor.fetchall()
 

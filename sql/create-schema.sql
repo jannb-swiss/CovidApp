@@ -220,3 +220,12 @@ FROM Cases cases
          JOIN Continent continent ON continent.ContinentID = country.ContinentID
 GROUP BY continent.ContinentID, CasesDate
 GO
+
+CREATE OR ALTER VIEW V_ContinentVaccinations
+AS
+SELECT VaccinationsDate, continent.ContinentID, sum(TotalVaccinations) as TotalVaccinations
+FROM Vaccinations vaccinations
+         JOIN Country country ON vaccinations.CountryID = country.CountryID
+         JOIN Continent continent ON continent.ContinentID = country.ContinentID
+GROUP BY continent.ContinentID, VaccinationsDate
+GO
