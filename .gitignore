@@ -15,4 +15,4 @@ config.py
 ### Python ###
 /venv/
 /__pycache__/
-/scripts/models/__pycache__/
+/models/__pycache__/

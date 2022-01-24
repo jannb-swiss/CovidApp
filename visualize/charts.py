@@ -4,7 +4,7 @@ import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 
-from scripts.db.database_connection import DatabaseConnection
+from db.database_connection import DatabaseConnection
 
 
 class Charts:

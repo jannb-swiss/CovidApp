@@ -3,8 +3,8 @@ import sys
 from datetime import datetime
 
 import config
-from charts import Charts
-from scripts.db.database_connection import DatabaseConnection
+from visualize.charts import Charts
+from db.database_connection import DatabaseConnection
 
 db = DatabaseConnection(
     config.db_credentials['driver'],

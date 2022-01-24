@@ -9,7 +9,7 @@ import config
 from models.case import Case
 from models.test import Test
 from models.vaccination import Vaccination
-from scripts.db.database_connection import DatabaseConnection
+from db.database_connection import DatabaseConnection
 
 verbose: bool = False
 csv_data_folder_path = "./data/csv"
