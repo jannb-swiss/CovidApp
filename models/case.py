@@ -1,4 +1,7 @@
 class Case:
+    """
+    Object which is representing a Case entity.
+    """
 
     def __init__(self, country: int, date: str, total_cases: int, new_cases: int, total_deaths: int, new_deaths: int,
                  reproduction_rate: float):
@@ -12,6 +15,13 @@ class Case:
 
     @staticmethod
     def from_csv_row(country: int, row: list):
+        """
+        Create a Case object based on CSV record.
+
+        Parameters:
+        country -- id of the country
+        row     -- record of the CSV file
+        """
         return Case(
             country,
             row[3],
@@ -24,6 +34,13 @@ class Case:
 
     @staticmethod
     def from_json_item(country: int, item: any):
+        """
+        Create a Case object based on JSON record.
+
+        Parameters:
+        country -- id of the country
+        item    -- one object from the JSON object
+        """
         return Case(
             country,
             item['date'],
@@ -100,7 +117,3 @@ class Case:
             self.new_deaths,
             self.reproduction_rate
         )
-
-    def to_string(self) -> str:
-        return self.date + ", " + str(self.total_cases) + ", " + str(self.new_cases) + ", " + str(
-            self.total_deaths) + ", " + str(self.new_deaths) + ", " + str(self.reproduction_rate)

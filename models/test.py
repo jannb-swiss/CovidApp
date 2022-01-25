@@ -1,4 +1,7 @@
 class Test:
+    """
+    Object which is representing a Test entity.
+    """
 
     def __init__(self, country: int, date: str, new_tests: int, total_tests: int, positive_rate: float):
         self._country = country
@@ -9,6 +12,13 @@ class Test:
 
     @staticmethod
     def from_csv_row(country: int, row: list):
+        """
+        Create a Test object based on CSV record.
+
+        Parameters:
+        country -- id of the country
+        row     -- record of the CSV file
+        """
         return Test(
             country,
             row[3],
@@ -19,6 +29,13 @@ class Test:
 
     @staticmethod
     def from_json_item(country: int, item: any):
+        """
+        Create a Test object based on JSON record.
+
+        Parameters:
+        country -- id of the country
+        item    -- one object from the JSON object
+        """
         return Test(
             country,
             item['date'],

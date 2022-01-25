@@ -3,8 +3,8 @@ import sys
 from datetime import datetime
 
 import config
-from visualize.charts import Charts
 from db.database_connection import DatabaseConnection
+from visualize.charts import Charts
 
 db = DatabaseConnection(
     config.db_credentials['driver'],
@@ -24,39 +24,42 @@ def get_help():
     print("################################################")
 
 
+def run_with_date_input(method_to_run):
+    """
+    Run a method with a date input from the user.
+
+    Parameters:
+    method_to_run -- method which is called with date input
+    """
+    date_text = input('Enter specific date (e.g. 2021-11-22): ')
+
+    try:
+        datetime.strptime(date_text, '%Y-%m-%d')
+        method_to_run(date_text)
+    except ValueError:
+        print("The entered date is not in the correct format, should be YYYY-MM-DD. Please try again!")
+
+
 if __name__ == "__main__":
     try:
         charts = Charts(db)
 
         get_help()
-        action = None
 
         while True:
             action = input('Enter your option: ')
 
-            if action == '1':
-                date_text = input('Enter specific date (e.g. 2021-11-22): ')
-
-                try:
-                    datetime.strptime(date_text, '%Y-%m-%d')
-                    charts.show_total_cases_by_continent(date_text)
-                except ValueError:
-                    print("The entered date is not in the correct format, should be YYYY-MM-DD. Please try again!")
-
-            if action == '2':
-                charts.show_death_chart()
-
-            if action == '3':
-                date_text = input('Enter specific date (e.g. 2021-06-06): ')
-
-                try:
-                    datetime.strptime(date_text, '%Y-%m-%d')
-                    charts.show_total_vaccinations_by_continent(date_text)
-                except ValueError:
-                    print("The entered date is not in the correct format, should be YYYY-MM-DD. Please try again!")
-
-            elif action == 'exit':
-                sys.exit(0)
+            match action:
+                case '1':
+                    run_with_date_input(charts.show_total_cases_by_continent)
+                case '2':
+                    charts.show_death_chart()
+                case '3':
+                    run_with_date_input(charts.show_total_vaccinations_by_continent)
+                case 'exit':
+                    sys.exit(0)
+                case _:
+                    print("Invalid action. Please try again!")
 
     except getopt.error as err:
         print(str(err))

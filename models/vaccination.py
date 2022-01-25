@@ -1,4 +1,7 @@
 class Vaccination:
+    """
+    Object which is representing a Vaccination entity.
+    """
 
     def __init__(self, country: int, date: str, total_vaccinations: int, people_vaccinated: int,
                  people_fully_vaccinated: int, new_vaccinations: int):
@@ -11,6 +14,13 @@ class Vaccination:
 
     @staticmethod
     def from_csv_row(country: int, row: list):
+        """
+        Create a Vaccination object based on CSV record.
+
+        Parameters:
+        country -- id of the country
+        row     -- record of the CSV file
+        """
         return Vaccination(
             country,
             row[3],
@@ -22,6 +32,13 @@ class Vaccination:
 
     @staticmethod
     def from_json_item(country: int, item: any):
+        """
+        Create a Vaccination object based on JSON record.
+
+        Parameters:
+        country -- id of the country
+        item    -- one object from the JSON object
+        """
         return Vaccination(
             country,
             item['date'],
