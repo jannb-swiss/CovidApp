@@ -30,7 +30,7 @@ CREATE TABLE dbo.Country
     CountryID   INT PRIMARY KEY IDENTITY (1,1) NOT NULL,
     ContinentID INT                            NOT NULL,
     IsoCode     VARCHAR(10)                    NOT NULL UNIQUE,
-    Location    VARCHAR(50)                    NOT NULL,
+    Location    VARCHAR(50)                    NOT NULL UNIQUE,
     Population  INT                            NOT NULL,
     CONSTRAINT FK_Country_Continent FOREIGN KEY (ContinentID) REFERENCES Continent (ContinentID)
 )
@@ -45,6 +45,7 @@ CREATE TABLE dbo.Cases
     NewDeaths        INT                            NOT NULL,
     ReproductionRate FLOAT                          NOT NULL,
     CountryID        INT                            NOT NULL,
+    CONSTRAINT UC_Cases_CountryID_CasesDate UNIQUE (CountryID, CasesDate),
     CONSTRAINT FK_Cases_Country FOREIGN KEY (CountryID) REFERENCES Country (CountryID),
 )
 
@@ -56,6 +57,7 @@ CREATE TABLE dbo.Tests
     TotalTests   INT                            NOT NULL,
     PositiveRate FLOAT                          NOT NULL,
     CountryID    INT                            NOT NULL,
+    CONSTRAINT UC_Tests_CountryID_TestsDate UNIQUE (CountryID, TestsDate),
     CONSTRAINT FK_Tests_Country FOREIGN KEY (CountryID) REFERENCES Country (CountryID)
 )
 
@@ -68,8 +70,20 @@ CREATE TABLE dbo.Vaccinations
     PeopleFullyVaccinated BIGINT,
     NewVaccinations       BIGINT,
     CountryID             INT                            NOT NULL,
+    CONSTRAINT UC_Vaccinations_CountryID_VaccinationsDate UNIQUE (CountryID, VaccinationsDate),
     CONSTRAINT FK_Vaccinations_Country FOREIGN KEY (CountryID) REFERENCES Country (CountryID),
 );
+GO
+
+CREATE INDEX IDX_ContinentName ON Continent (ContinentName)
+GO
+CREATE INDEX IDX_CountryIsoCode ON Country (IsoCode)
+GO
+CREATE INDEX IDX_CasesDate ON Cases (CasesDate)
+GO
+CREATE INDEX IDX_TestsDate ON Tests (TestsDate)
+GO
+CREATE INDEX IDX_VaccinationsDate ON Vaccinations (VaccinationsDate)
 GO
 
 IF EXISTS(
@@ -81,8 +95,8 @@ IF EXISTS(
     )
     DROP PROCEDURE dbo.createContinent
 GO
-CREATE PROCEDURE dbo.createContinent @name varchar(50),
-                                     @new_identity int = null output
+CREATE PROCEDURE dbo.createContinent @name VARCHAR(50),
+                                     @new_identity INT = NULL OUTPUT
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -188,12 +202,12 @@ IF EXISTS(
     )
     DROP PROCEDURE dbo.createVaccinations
 GO
-CREATE PROCEDURE dbo.createVaccinations @country int,
-                                        @date date,
-                                        @total_vaccinations int,
-                                        @people_vaccinated int,
-                                        @people_fully_vaccinated int,
-                                        @new_vaccinations int
+CREATE PROCEDURE dbo.createVaccinations @country INT,
+                                        @date DATE,
+                                        @total_vaccinations BIGINT,
+                                        @people_vaccinated BIGINT,
+                                        @people_fully_vaccinated BIGINT,
+                                        @new_vaccinations BIGINT
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -214,7 +228,7 @@ GO
 
 CREATE OR ALTER VIEW V_ContinentCases
 AS
-SELECT CasesDate, continent.ContinentID, sum(TotalCases) as totalCases
+SELECT CasesDate, continent.ContinentID, sum(TotalCases) AS totalCases
 FROM Cases cases
          JOIN Country country ON cases.CountryID = country.CountryID
          JOIN Continent continent ON continent.ContinentID = country.ContinentID
@@ -223,7 +237,7 @@ GO
 
 CREATE OR ALTER VIEW V_ContinentTotalVaccinations
 AS
-SELECT VaccinationsDate, continent.ContinentID, sum(TotalVaccinations) as TotalVaccinations
+SELECT VaccinationsDate, continent.ContinentID, sum(TotalVaccinations) AS TotalVaccinations
 FROM Vaccinations vaccinations
          JOIN Country country ON vaccinations.CountryID = country.CountryID
          JOIN Continent continent ON continent.ContinentID = country.ContinentID

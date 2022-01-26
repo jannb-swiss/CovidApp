@@ -6,10 +6,10 @@ import os
 import sys
 
 import config
+from db.database_connection import DatabaseConnection
 from models.case import Case
 from models.test import Test
 from models.vaccination import Vaccination
-from db.database_connection import DatabaseConnection
 
 verbose: bool = False
 csv_data_folder_path = "./data/csv"
@@ -166,7 +166,7 @@ def import_json_file(file_path: str):
             if item['continent'] == "":
                 continue
 
-            continent_id: id = insert_continent_if_not_existing(item['location'])
+            continent_id: id = insert_continent_if_not_existing(item['continent'])
             country_id: id = insert_country_if_not_existing(item['iso_code'], item['location'], item['population'],
                                                             continent_id)
 
