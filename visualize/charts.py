@@ -17,7 +17,7 @@ class Charts:
         self._db = db
 
     @staticmethod
-    def create_pie_chart(title, date_text, sizes, labels):
+    def create_pie_chart(title, date_text, sizes, labels, text):
         """
         Common methode to create a pie chart width data and label
 
@@ -36,6 +36,8 @@ class Charts:
 
         ax1.axis('equal')
         plt.title(title, bbox={'facecolor': '0.9', 'pad': 5}, y=1.05)
+        plt.text(-1.75, 1, text)
+        plt.tight_layout()
         plt.show()
 
     def show_total_cases_by_continent(self, date_text: str):
@@ -49,7 +51,8 @@ class Charts:
         sizes = [case[2] for case in self._db.get_continent_cases(date_text)]
 
         title = "Total Cases by Continent - {}".format(date_text)
-        self.create_pie_chart(title, date_text, sizes, labels)
+        text = "Total Cases: " + f'{sum(sizes):,}'
+        self.create_pie_chart(title, date_text, sizes, labels, text)
 
     def show_total_vaccinations_by_continent(self, date_text: str):
         """
@@ -62,7 +65,8 @@ class Charts:
         sizes = [case[2] for case in self._db.get_continent_vaccinations(date_text)]
 
         title = "Total Vaccinations by Continent - {}".format(date_text)
-        self.create_pie_chart(title, date_text, sizes, labels)
+        text = "Total Vaccinations: " + f'{sum(sizes):,}'
+        self.create_pie_chart(title, date_text, sizes, labels, text)
 
     def show_death_chart(self):
         """
