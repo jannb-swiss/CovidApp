@@ -91,9 +91,9 @@ class DatabaseConnection:
         name -- the name of the continent (e.g. Europe)
         """
         sql = """
-        declare @out int;
-        exec createContinent @name = ?, @new_identity = @out output;
-        select @out AS the_output;
+        DECLARE @out INT;
+        EXEC createContinent @name = ?, @new_identity = @out OUTPUT;
+        SELECT @out AS continent_is;
         """
         self.cursor.execute(sql, name)
         inserted_id: int = self.cursor.fetchall()
@@ -111,9 +111,9 @@ class DatabaseConnection:
         population   -- the population of the country (20000)
         """
         sql = """
-        declare @out int;
-        exec createCountry @continent = ?, @iso_code = ?, @name = ?, @population = ?, @new_identity = @out output;
-        select @out as the_output;
+        DECLARE @out INT;
+        EXEC createCountry @continent = ?, @iso_code = ?, @name = ?, @population = ?, @new_identity = @out OUTPUT;
+        SELECT @out AS country_id;
         """
         self.cursor.execute(sql, (continent_id, iso_code, name, population))
         inserted_id: int = self.cursor.fetchall()
@@ -127,7 +127,15 @@ class DatabaseConnection:
         Parameters:
         case -- case object with all the necessary information
         """
-        sql = "exec createCases @country = ?, @date = ?, @total_cases = ?, @new_cases = ?, @total_deaths = ?, @new_deaths = ?, @reproduction_rate = ?;"
+        sql = """
+        EXEC createCases @country = ?,
+                         @date = ?,
+                         @total_cases = ?,
+                         @new_cases = ?,
+                         @total_deaths = ?,
+                         @new_deaths = ?,
+                         @reproduction_rate = ?;
+        """
         self.cursor.execute(sql, case.to_tuple())
         self.cursor.commit()
 
@@ -138,7 +146,14 @@ class DatabaseConnection:
         Parameters:
         vaccination -- vaccination object with all the necessary information
         """
-        sql = "exec createVaccinations @country = ?, @date = ?, @total_vaccinations = ?, @people_vaccinated = ?, @people_fully_vaccinated = ?, @new_vaccinations = ?;"
+        sql = """
+        EXEC createVaccinations @country = ?,
+                                @date = ?,
+                                @total_vaccinations = ?,
+                                @people_vaccinated = ?,
+                                @people_fully_vaccinated = ?,
+                                @new_vaccinations = ?;
+        """
         self.cursor.execute(sql, vaccination.to_tuple())
         self.cursor.commit()
 
@@ -149,7 +164,7 @@ class DatabaseConnection:
         Parameters:
         test -- test object with all the necessary information
         """
-        sql = "exec createTests @country = ?, @date = ?, @new_tests = ?, @total_tests = ?, @positive_rate = ?;"
+        sql = "EXEC createTests @country = ?, @date = ?, @new_tests = ?, @total_tests = ?, @positive_rate = ?;"
         self.cursor.execute(sql, test.to_tuple())
         self.cursor.commit()
 
@@ -176,11 +191,22 @@ class DatabaseConnection:
         return self.cursor.fetchall()
 
     def get_total_cases(self):
+        """
+        Loads all the total cases grouped and ordered by date.
+        """
         sql = "SELECT CasesDate, sum(TotalCases), sum(TotalDeaths) FROM Cases GROUP BY CasesDate ORDER BY CasesDate"
         self.cursor.execute(sql)
         return self.cursor.fetchall()
 
     def get_total_vaccinations(self):
-        sql = "SELECT VaccinationsDate, sum(cast(TotalVaccinations AS bigint)) FROM Vaccinations GROUP BY VaccinationsDate ORDER BY VaccinationsDate"
+        """
+        Loads all total vaccinations grouped and ordered by date.
+        """
+        sql = """
+        SELECT VaccinationsDate, sum(cast(TotalVaccinations AS bigint))
+        FROM Vaccinations
+        GROUP BY VaccinationsDate
+        ORDER BY VaccinationsDate
+        """
         self.cursor.execute(sql)
         return self.cursor.fetchall()
