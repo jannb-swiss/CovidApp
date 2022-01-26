@@ -1,12 +1,42 @@
-## todos:
--Database -> 3 Normalform\
--Data visualization
+# Covid App
 
-## Daten von:
-https://github.com/openZH/covid_19
+## Configuration
 
-## Beschrieb:
-https://github.com/openZH/covid_19/tree/master#swiss-cantons-and-principality-of-liechtenstein-unified-dataset
+Create a config file `config.py` with the needed database configuration. See example:
 
-## Data visualization: Delete after!!
-https://deepnote.com/@abid/SQL-And-Python-Visualization-4HpqMR1KSNSFqMWUHjCsAw
+```
+db_credentials = dict(
+    driver='{SQL Server}',
+    host='localhost',
+    database='CovidAppDB',
+    user='',
+    password=''
+)
+```
+
+### *Note*:
+
+Use correct driver based on you operating system:
+
+* Windows: `{SQL Server}`
+* macOS: `{ODBC Driver 17 for SQL Server}`
+
+## Setup Database Schema
+
+Before using the Python scripts to import and visualize data, you have to create the database schema.
+
+Just run the SQL script on the MSSQL Server instance: `./sql/create-schema.sql`
+
+## Usage
+
+### Import data
+
+```
+python3 scripts/import_data.py [-v --verbose]
+```
+
+### Visualize data
+
+```
+python3 scripts/visualize_data.py
+```

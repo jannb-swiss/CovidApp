@@ -1,0 +1,18 @@
+config.py
+
+### Common ###
+.DS_Store
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### VS Code ###
+.vscode/
+
+### Python ###
+/venv/
+/__pycache__/
+/models/__pycache__/
